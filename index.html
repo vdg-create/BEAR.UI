@@ -1,0 +1,834 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BEAR.UI - Bubu & Dudu's Little Universe</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        cream: '#FFFBF5',
+                        bubu: {
+                            light: '#FFF0F5',
+                            DEFAULT: '#FFB6C1',
+                            dark: '#FF69B4',
+                        },
+                        dudu: {
+                            light: '#F5EBE0',
+                            DEFAULT: '#C19A6B',
+                            dark: '#8B5A2B',
+                        },
+                        honey: '#FFE893',
+                        pastelRose: '#FFD1DC',
+                        pastelMint: '#E8F5E9'
+                    },
+                    fontFamily: {
+                        fredoka: ['Fredoka', 'sans-serif'],
+                        quicksand: ['Quicksand', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Quicksand:wght@500;600;700&display=swap" rel="stylesheet">
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <!-- Canvas Confetti -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+    <style>
+        body {
+            font-family: 'Quicksand', sans-serif;
+            background-color: #FFF9F3;
+            background-image: radial-gradient(#FDE2E4 1.5px, transparent 1.5px);
+            background-size: 24px 24px;
+        }
+
+        .heading-font {
+            font-family: 'Fredoka', cursive;
+        }
+
+        /* Cute Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #FFF0F5;
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #FFB6C1;
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #FF69B4;
+        }
+
+        /* Floating Animation */
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-8px) rotate(2deg); }
+        }
+        .animate-float {
+            animation: float 4s ease-in-out infinite;
+        }
+
+        @keyframes pulse-gentle {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+        .animate-pulse-gentle {
+            animation: pulse-gentle 2s ease-in-out infinite;
+        }
+
+        /* Envelope Flap Transition */
+        .envelope-flap {
+            transform-origin: top;
+            transition: transform 0.6s ease-in-out;
+        }
+        .envelope-open .envelope-flap {
+            transform: rotateX(180deg);
+        }
+
+        /* Paper Styles */
+        .paper-warm-honey {
+            background-color: #FFFDE7;
+            border-color: #FFE082;
+            color: #5D4037;
+        }
+        .paper-pastel-rose {
+            background-color: #FFF0F3;
+            border-color: #FFCCE1;
+            color: #880E4F;
+        }
+        .paper-midnight-starlight {
+            background-color: #1E1B4B;
+            border-color: #4338CA;
+            color: #E0E7FF;
+        }
+        .paper-paw-prints {
+            background-color: #FAF0E6;
+            background-image: radial-gradient(#D2B48C 0.8px, transparent 0.8px);
+            background-size: 12px 12px;
+            border-color: #D2B48C;
+            color: #4A3B32;
+        }
+
+        /* Particle Heart Effect Container */
+        .heart-particle {
+            position: fixed;
+            pointer-events: none;
+            animation: floatUpAndFade 1.2s ease-out forwards;
+            z-index: 9999;
+        }
+
+        @keyframes floatUpAndFade {
+            0% {
+                opacity: 1;
+                transform: translateY(0) scale(0.8) rotate(0deg);
+            }
+            100% {
+                opacity: 0;
+                transform: translateY(-100px) scale(1.4) rotate(20deg);
+            }
+        }
+    </style>
+</head>
+<body class="min-h-screen text-slate-700 flex flex-col pb-12 selection:bg-bubu selection:text-white">
+
+    <!-- Top Navigation Header -->
+    <header class="sticky top-0 z-40 bg-white/80 backdrop-blur-md border-b-2 border-pink-100 shadow-sm">
+        <div class="max-w-5xl mx-auto px-4 sm:px-6 h-20 flex items-center justify-between">
+            
+            <!-- Logo -->
+            <div class="flex items-center space-x-3 cursor-pointer" onclick="switchTab('universe')">
+                <div class="relative w-12 h-12 rounded-2xl bg-gradient-to-tr from-pink-300 to-amber-200 flex items-center justify-center shadow-inner text-2xl border-2 border-white">
+                    🐻
+                    <span class="absolute -bottom-1 -right-1 text-base">🐼</span>
+                </div>
+                <div>
+                    <h1 class="heading-font text-2xl font-bold bg-gradient-to-r from-dudu-dark via-pink-500 to-bubu-dark bg-clip-text text-transparent">
+                        BEAR.UI
+                    </h1>
+                    <p class="text-xs font-semibold text-pink-400 tracking-wider">DUDU & BUBU'S NEST</p>
+                </div>
+            </div>
+
+            <!-- User Selector Toggle -->
+            <div class="flex items-center space-x-2 bg-pink-50 p-1.5 rounded-2xl border border-pink-100 shadow-inner">
+                <span class="text-xs font-bold text-slate-400 hidden sm:inline ml-2">Active:</span>
+                
+                <button id="btnDudu" onclick="setActiveUser('dudu')" class="flex items-center space-x-1.5 px-3 py-1.5 rounded-xl text-xs font-bold transition-all duration-200">
+                    <span class="text-base">🐻</span>
+                    <span>Dudu</span>
+                </button>
+
+                <button id="btnBubu" onclick="setActiveUser('bubu')" class="flex items-center space-x-1.5 px-3 py-1.5 rounded-xl text-xs font-bold transition-all duration-200">
+                    <span class="text-base">🐼</span>
+                    <span>Bubu</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Navigation Tabs Bar -->
+        <div class="max-w-md mx-auto px-4 pb-2">
+            <nav class="flex justify-around bg-pink-100/60 p-1 rounded-2xl border border-pink-200/50">
+                <button id="tabWhisper" onclick="switchTab('whisper')" class="tab-btn flex-1 flex items-center justify-center space-x-2 py-2 text-xs sm:text-sm font-bold rounded-xl transition-all">
+                    <i data-lucide="message-circle-heart" class="w-4 h-4"></i>
+                    <span>Whisper Nook</span>
+                </button>
+                <button id="tabLetters" onclick="switchTab('letters')" class="tab-btn flex-1 flex items-center justify-center space-x-2 py-2 text-xs sm:text-sm font-bold rounded-xl transition-all">
+                    <i data-lucide="mail-heart" class="w-4 h-4"></i>
+                    <span>Love Letters</span>
+                </button>
+                <button id="tabUniverse" onclick="switchTab('universe')" class="tab-btn flex-1 flex items-center justify-center space-x-2 py-2 text-xs sm:text-sm font-bold rounded-xl transition-all">
+                    <i data-lucide="sparkles" class="w-4 h-4"></i>
+                    <span>Universe</span>
+                </button>
+            </nav>
+        </div>
+    </header>
+
+    <main class="max-w-4xl mx-auto px-4 sm:px-6 pt-6 flex-grow w-full">
+
+        <!-- Component 1: Whisper Nook (Chat Platform) -->
+        <section id="secWhisper" class="tab-content hidden space-y-4">
+            <div class="bg-white/90 backdrop-blur rounded-3xl p-4 sm:p-6 shadow-xl border-2 border-pink-100 flex flex-col h-[600px]">
+                
+                <!-- Chat Header -->
+                <div class="flex items-center justify-between pb-4 border-b border-pink-100">
+                    <div class="flex items-center space-x-3">
+                        <div class="flex -space-x-2 overflow-hidden">
+                            <span class="inline-block w-9 h-9 rounded-full bg-amber-100 text-center leading-8 text-xl border-2 border-white shadow-sm">🐻</span>
+                            <span class="inline-block w-9 h-9 rounded-full bg-pink-100 text-center leading-8 text-xl border-2 border-white shadow-sm">🐼</span>
+                        </div>
+                        <div>
+                            <h2 class="heading-font text-lg font-bold text-slate-800">Whisper Nook</h2>
+                            <p class="text-xs text-slate-400">Quick love notes & gentle reminders</p>
+                        </div>
+                    </div>
+                    <button onclick="clearChatHistory()" class="text-slate-400 hover:text-pink-500 p-2 rounded-xl hover:bg-pink-50 transition" title="Clear Chat">
+                        <i data-lucide="rotate-ccw" class="w-4 h-4"></i>
+                    </button>
+                </div>
+
+                <!-- Messages Container -->
+                <div id="chatFeed" class="flex-grow overflow-y-auto py-4 space-y-4 px-2">
+                    <!-- Messages dynamically rendered here -->
+                </div>
+
+                <!-- Input Box & Quick Stickers -->
+                <div class="pt-3 border-t border-pink-100 space-y-3">
+                    <!-- Sticker Quick Picker -->
+                    <div class="flex items-center space-x-2 overflow-x-auto pb-1 text-lg">
+                        <span class="text-xs font-bold text-pink-400 mr-1">Stickers:</span>
+                        <button onclick="addSticker('❤️')" class="hover:scale-125 transition transform px-1.5 py-0.5 rounded-lg hover:bg-pink-100">❤️</button>
+                        <button onclick="addSticker('🍯')" class="hover:scale-125 transition transform px-1.5 py-0.5 rounded-lg hover:bg-pink-100">🍯</button>
+                        <button onclick="addSticker('🐾')" class="hover:scale-125 transition transform px-1.5 py-0.5 rounded-lg hover:bg-pink-100">🐾</button>
+                        <button onclick="addSticker('🍓')" class="hover:scale-125 transition transform px-1.5 py-0.5 rounded-lg hover:bg-pink-100">🍓</button>
+                        <button onclick="addSticker('🐻')" class="hover:scale-125 transition transform px-1.5 py-0.5 rounded-lg hover:bg-pink-100">🐻</button>
+                        <button onclick="addSticker('🐼')" class="hover:scale-125 transition transform px-1.5 py-0.5 rounded-lg hover:bg-pink-100">🐼</button>
+                        <button onclick="addSticker('🫂')" class="hover:scale-125 transition transform px-1.5 py-0.5 rounded-lg hover:bg-pink-100">🫂</button>
+                        <button onclick="addSticker('💋')" class="hover:scale-125 transition transform px-1.5 py-0.5 rounded-lg hover:bg-pink-100">💋</button>
+                    </div>
+
+                    <form id="chatForm" onsubmit="handleSendChat(event)" class="flex items-center space-x-2">
+                        <input id="chatInput" type="text" placeholder="Type a sweet message to your bear..." autocomplete="off"
+                            class="flex-grow px-4 py-3 rounded-2xl bg-pink-50/50 border border-pink-200 focus:outline-none focus:ring-2 focus:ring-pink-300 text-sm font-medium">
+                        <button type="submit" class="px-5 py-3 rounded-2xl bg-gradient-to-r from-pink-400 to-rose-400 hover:from-pink-500 hover:to-rose-500 text-white font-bold text-sm shadow-md transition transform active:scale-95 flex items-center space-x-1">
+                            <span>Send</span>
+                            <i data-lucide="send" class="w-4 h-4"></i>
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </section>
+
+        <!-- Component 2: Love Letters Platform -->
+        <section id="secLetters" class="tab-content hidden space-y-6">
+            
+            <!-- Controls Bar -->
+            <div class="flex items-center justify-between">
+                <div>
+                    <h2 class="heading-font text-2xl font-bold text-slate-800">Love Letters</h2>
+                    <p class="text-xs text-slate-500">Sealed with affection, stored for eternity</p>
+                </div>
+                <button onclick="openLetterModal()" class="px-4 py-2.5 rounded-2xl bg-amber-700 hover:bg-amber-800 text-white font-bold text-sm shadow-md transition flex items-center space-x-2 transform active:scale-95">
+                    <i data-lucide="pen-tool" class="w-4 h-4"></i>
+                    <span>Write Letter</span>
+                </button>
+            </div>
+
+            <!-- Letter Drawer Grid -->
+            <div id="lettersGrid" class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                <!-- Dynamically populated letters -->
+            </div>
+        </section>
+
+        <!-- Component 3: Our Little Universe (Counter, Mood Jar & Hug Button) -->
+        <section id="secUniverse" class="tab-content hidden space-y-6">
+            
+            <!-- Days Together Counter Banner -->
+            <div class="bg-gradient-to-br from-pink-200 via-rose-100 to-amber-100 rounded-3xl p-6 sm:p-8 shadow-xl border-2 border-white relative overflow-hidden text-center">
+                <div class="absolute -top-6 -right-6 text-8xl opacity-20 pointer-events-none">🐻</div>
+                <div class="absolute -bottom-6 -left-6 text-8xl opacity-20 pointer-events-none">🐼</div>
+
+                <span class="inline-block px-3 py-1 rounded-full bg-white/80 backdrop-blur text-xs font-bold text-pink-500 uppercase tracking-widest shadow-sm mb-3">
+                    Our Love Journey
+                </span>
+                
+                <h2 class="heading-font text-3xl sm:text-5xl font-extrabold text-slate-800 mb-2" id="daysCounter">
+                    0 Days Together
+                </h2>
+                <p class="text-xs sm:text-sm text-slate-600 font-semibold max-w-md mx-auto">
+                    Since the day Dudu 🐻 and Bubu 🐼 met and decided to hold hands forever!
+                </p>
+
+                <!-- Hugs & Kisses Counter Button -->
+                <div class="mt-6 flex flex-col sm:flex-row items-center justify-center gap-4">
+                    <button onclick="sendLoveAction(event, 'hug')" class="w-full sm:w-auto px-6 py-3 rounded-2xl bg-white hover:bg-pink-50 text-pink-600 font-extrabold text-sm shadow-md border-2 border-pink-200 transition transform hover:-translate-y-0.5 active:scale-95 flex items-center justify-center space-x-2">
+                        <span>🤗 Send Hug</span>
+                        <span id="hugCount" class="bg-pink-100 text-pink-700 px-2 py-0.5 rounded-full text-xs">0</span>
+                    </button>
+                    <button onclick="sendLoveAction(event, 'kiss')" class="w-full sm:w-auto px-6 py-3 rounded-2xl bg-gradient-to-r from-pink-500 to-rose-400 text-white font-extrabold text-sm shadow-md transition transform hover:-translate-y-0.5 active:scale-95 flex items-center justify-center space-x-2">
+                        <span>💋 Send Kiss</span>
+                        <span id="kissCount" class="bg-white/30 text-white px-2 py-0.5 rounded-full text-xs">0</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Daily Mood & Love Jar -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- Mood Jar Check-In Form -->
+                <div class="bg-white/90 backdrop-blur rounded-3xl p-6 shadow-xl border-2 border-pink-100 flex flex-col justify-between">
+                    <div>
+                        <div class="flex items-center space-x-2 mb-4">
+                            <span class="text-2xl">🏺</span>
+                            <div>
+                                <h3 class="heading-font text-lg font-bold text-slate-800">Love Jar Mood Check-In</h3>
+                                <p class="text-xs text-slate-400">How is <span id="moodCheckUserLabel">Dudu</span> feeling today?</p>
+                            </div>
+                        </div>
+
+                        <form id="moodForm" onsubmit="handleMoodSubmit(event)" class="space-y-4">
+                            <div>
+                                <label class="block text-xs font-bold text-slate-500 mb-2">Select Today's Mood:</label>
+                                <div class="grid grid-cols-4 gap-2">
+                                    <label class="cursor-pointer">
+                                        <input type="radio" name="moodEmoji" value="🥰" class="peer hidden" checked>
+                                        <div class="p-2 text-center text-xl rounded-xl border border-slate-200 peer-checked:border-pink-400 peer-checked:bg-pink-100 transition">🥰</div>
+                                    </label>
+                                    <label class="cursor-pointer">
+                                        <input type="radio" name="moodEmoji" value="🥺" class="peer hidden">
+                                        <div class="p-2 text-center text-xl rounded-xl border border-slate-200 peer-checked:border-pink-400 peer-checked:bg-pink-100 transition">🥺</div>
+                                    </label>
+                                    <label class="cursor-pointer">
+                                        <input type="radio" name="moodEmoji" value="😴" class="peer hidden">
+                                        <div class="p-2 text-center text-xl rounded-xl border border-slate-200 peer-checked:border-pink-400 peer-checked:bg-pink-100 transition">😴</div>
+                                    </label>
+                                    <label class="cursor-pointer">
+                                        <input type="radio" name="moodEmoji" value="💖" class="peer hidden">
+                                        <div class="p-2 text-center text-xl rounded-xl border border-slate-200 peer-checked:border-pink-400 peer-checked:bg-pink-100 transition">💖</div>
+                                    </label>
+                                </div>
+                            </div>
+
+                            <div>
+                                <label class="block text-xs font-bold text-slate-500 mb-1">Today's Sweet Thought:</label>
+                                <input id="moodNote" type="text" placeholder="e.g. Missing Bubu extra today..." required
+                                    class="w-full px-3 py-2 rounded-xl bg-pink-50/50 border border-pink-200 focus:outline-none focus:ring-2 focus:ring-pink-300 text-xs font-medium">
+                            </div>
+
+                            <button type="submit" class="w-full py-2.5 rounded-xl bg-amber-500 hover:bg-amber-600 text-white font-bold text-xs shadow transition">
+                                Drop Note in Love Jar 🍯
+                            </button>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Love Jar Feed Display -->
+                <div class="bg-white/90 backdrop-blur rounded-3xl p-6 shadow-xl border-2 border-pink-100 flex flex-col">
+                    <h3 class="heading-font text-lg font-bold text-slate-800 mb-3 flex items-center space-x-2">
+                        <i data-lucide="heart-handshake" class="w-5 h-5 text-pink-400"></i>
+                        <span>Today's Jar Notes</span>
+                    </h3>
+                    <div id="jarNotesFeed" class="flex-grow overflow-y-auto space-y-3 max-h-[260px] pr-1">
+                        <!-- Dynamically filled with mood notes -->
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Write Letter Modal -->
+    <div id="letterModal" class="fixed inset-0 z-50 hidden bg-slate-900/40 backdrop-blur-sm flex items-center justify-center p-4">
+        <div class="bg-white rounded-3xl max-w-lg w-full p-6 shadow-2xl border-2 border-pink-100 relative max-h-[90vh] overflow-y-auto">
+            <button onclick="closeLetterModal()" class="absolute top-4 right-4 p-2 text-slate-400 hover:text-slate-600 rounded-full hover:bg-slate-100">
+                <i data-lucide="x" class="w-5 h-5"></i>
+            </button>
+
+            <h3 class="heading-font text-xl font-bold text-slate-800 mb-1 flex items-center space-x-2">
+                <span>✉️ Write a Love Letter</span>
+            </h3>
+            <p class="text-xs text-slate-400 mb-4">From <span id="modalAuthorTag" class="font-bold"></span></p>
+
+            <form id="letterForm" onsubmit="handleSaveLetter(event)" class="space-y-4">
+                <div>
+                    <label class="block text-xs font-bold text-slate-600 mb-1">Letter Title</label>
+                    <input id="letterTitle" type="text" required placeholder="e.g., My Favorite Memory With You" 
+                        class="w-full px-3 py-2 rounded-xl border border-pink-200 bg-pink-50/30 focus:outline-none focus:ring-2 focus:ring-pink-300 text-sm">
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold text-slate-600 mb-1">Paper Theme Style</label>
+                    <select id="letterStyle" class="w-full px-3 py-2 rounded-xl border border-pink-200 bg-pink-50/30 focus:outline-none focus:ring-2 focus:ring-pink-300 text-xs font-medium">
+                        <option value="warm-honey">🍯 Warm Honey</option>
+                        <option value="pastel-rose">🌸 Pastel Rose</option>
+                        <option value="midnight-starlight">✨ Midnight Starlight</option>
+                        <option value="paw-prints">🐾 Paw Prints</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold text-slate-600 mb-1">Stamp / Seal Style</label>
+                    <select id="letterStamp" class="w-full px-3 py-2 rounded-xl border border-pink-200 bg-pink-50/30 focus:outline-none focus:ring-2 focus:ring-pink-300 text-xs font-medium">
+                        <option value="💋">💋 Sealed with a Kiss</option>
+                        <option value="🐻">🐻 Dudu Paw Print</option>
+                        <option value="🐼">🐼 Bubu Paw Print</option>
+                        <option value="💖">💖 Infinite Heart Seal</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold text-slate-600 mb-1">Letter Content</label>
+                    <textarea id="letterBody" rows="6" required placeholder="Write your romantic thoughts here..."
+                        class="w-full px-3 py-2 rounded-xl border border-pink-200 bg-pink-50/30 focus:outline-none focus:ring-2 focus:ring-pink-300 text-sm resize-none"></textarea>
+                </div>
+
+                <div class="flex justify-end space-x-2 pt-2">
+                    <button type="button" onclick="closeLetterModal()" class="px-4 py-2 rounded-xl border border-slate-200 text-xs font-bold text-slate-600 hover:bg-slate-50">
+                        Cancel
+                    </button>
+                    <button type="submit" class="px-5 py-2 rounded-xl bg-pink-500 hover:bg-pink-600 text-white font-bold text-xs shadow-md">
+                        Seal & Save Letter 💌
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Letter View / Envelope Reader Modal -->
+    <div id="viewLetterModal" class="fixed inset-0 z-50 hidden bg-slate-900/50 backdrop-blur-sm flex items-center justify-center p-4">
+        <div id="envelopeCard" class="relative max-w-lg w-full rounded-3xl p-6 sm:p-8 shadow-2xl transition-all duration-300 transform scale-95 border-2">
+            <button onclick="closeViewLetterModal()" class="absolute top-4 right-4 p-2 text-slate-400 hover:text-slate-600 rounded-full hover:bg-white/40 z-10">
+                <i data-lucide="x" class="w-5 h-5"></i>
+            </button>
+
+            <!-- Letter Envelope Content -->
+            <div class="space-y-4">
+                <div class="flex items-center justify-between border-b border-current/10 pb-3">
+                    <div class="flex items-center space-x-2">
+                        <span id="viewLetterStamp" class="text-2xl"></span>
+                        <div>
+                            <span id="viewLetterFrom" class="text-xs font-bold tracking-wider uppercase opacity-75"></span>
+                            <p id="viewLetterDate" class="text-[10px] opacity-60"></p>
+                        </div>
+                    </div>
+                    <button id="viewLetterFavBtn" onclick="toggleFavoriteCurrentLetter()" class="text-pink-400 hover:scale-110 transition">
+                        <i data-lucide="heart" class="w-6 h-6"></i>
+                    </button>
+                </div>
+
+                <h2 id="viewLetterTitle" class="heading-font text-2xl font-bold tracking-tight"></h2>
+                
+                <div class="py-2">
+                    <p id="viewLetterBody" class="text-sm sm:text-base leading-relaxed whitespace-pre-line font-medium"></p>
+                </div>
+
+                <div class="pt-4 border-t border-current/10 text-right">
+                    <p class="text-xs italic opacity-80">Forever yours, with lots of hugs 🐻🐼</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // STATE MANAGEMENT
+        const STORAGE_KEY = 'BEAR_UI_APP_STATE_V1';
+
+        const defaultState = {
+            activeUser: 'dudu', // 'dudu' (him) or 'bubu' (her)
+            startDate: '2023-02-14', // Default romance counter start date
+            hugCount: 12,
+            kissCount: 28,
+            messages: [
+                { id: 1, sender: 'dudu', text: 'Good morning Bubu! Did you sleep well? 🐻', time: '8:30 AM' },
+                { id: 2, sender: 'bubu', text: 'Morning Dudu! I dreamt of sweet honey and strawberries 🐼🍓', time: '8:32 AM' },
+                { id: 3, sender: 'dudu', text: 'I saved the biggest strawberry for you today! ❤️', time: '8:35 AM' }
+            ],
+            letters: [
+                {
+                    id: 'sample-1',
+                    title: 'Our Promise & Honey Jar',
+                    author: 'dudu',
+                    recipient: 'bubu',
+                    style: 'warm-honey',
+                    stamp: '💋',
+                    date: 'Yesterday',
+                    isFavorite: true,
+                    body: 'Dearest Bubu,\n\nEvery day spent with you feels like a soft sunny afternoon. Thank you for always making me laugh and sharing your favorite snacks with me. I promise to protect your happiness forever and keep your heart warm!\n\nAll my love,\nDudu 🐻'
+                }
+            ],
+            jarNotes: [
+                { id: 1, user: 'bubu', mood: '🥰', note: 'Feeling super loved today!', date: 'Today' },
+                { id: 2, user: 'dudu', mood: '💖', note: 'Can\'t wait to hug Bubu later.', date: 'Today' }
+            ]
+        };
+
+        let state = JSON.parse(localStorage.getItem(STORAGE_KEY)) || defaultState;
+        let currentViewingLetterId = null;
+
+        function saveState() {
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+        }
+
+        // INITIALIZATION
+        window.onload = function() {
+            lucide.createIcons();
+            setActiveUser(state.activeUser);
+            switchTab('universe');
+            updateDaysCounter();
+            renderChat();
+            renderLetters();
+            renderJarNotes();
+            updateLoveCounters();
+        };
+
+        // PROFILE SWITCHER
+        function setActiveUser(user) {
+            state.activeUser = user;
+            saveState();
+
+            const btnDudu = document.getElementById('btnDudu');
+            const btnBubu = document.getElementById('btnBubu');
+            const moodCheckUserLabel = document.getElementById('moodCheckUserLabel');
+
+            if (user === 'dudu') {
+                btnDudu.className = 'flex items-center space-x-1.5 px-3 py-1.5 rounded-xl text-xs font-bold transition-all duration-200 bg-amber-700 text-white shadow-md';
+                btnBubu.className = 'flex items-center space-x-1.5 px-3 py-1.5 rounded-xl text-xs font-bold transition-all duration-200 text-slate-500 hover:bg-pink-100';
+                moodCheckUserLabel.textContent = 'Dudu 🐻';
+            } else {
+                btnBubu.className = 'flex items-center space-x-1.5 px-3 py-1.5 rounded-xl text-xs font-bold transition-all duration-200 bg-pink-500 text-white shadow-md';
+                btnDudu.className = 'flex items-center space-x-1.5 px-3 py-1.5 rounded-xl text-xs font-bold transition-all duration-200 text-slate-500 hover:bg-pink-100';
+                moodCheckUserLabel.textContent = 'Bubu 🐼';
+            }
+
+            renderChat(); // Re-render chat to adjust bubble orientations
+        }
+
+        // NAVIGATION TABS
+        function switchTab(tabName) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.remove('bg-white', 'text-pink-600', 'shadow-sm');
+                btn.classList.add('text-slate-500');
+            });
+
+            if (tabName === 'whisper') {
+                document.getElementById('secWhisper').classList.remove('hidden');
+                const btn = document.getElementById('tabWhisper');
+                btn.classList.add('bg-white', 'text-pink-600', 'shadow-sm');
+                btn.classList.remove('text-slate-500');
+            } else if (tabName === 'letters') {
+                document.getElementById('secLetters').classList.remove('hidden');
+                const btn = document.getElementById('tabLetters');
+                btn.classList.add('bg-white', 'text-pink-600', 'shadow-sm');
+                btn.classList.remove('text-slate-500');
+            } else {
+                document.getElementById('secUniverse').classList.remove('hidden');
+                const btn = document.getElementById('tabUniverse');
+                btn.classList.add('bg-white', 'text-pink-600', 'shadow-sm');
+                btn.classList.remove('text-slate-500');
+            }
+        }
+
+        // COMPONENT 1: WHISPER NOOK CHAT LOGIC
+        function renderChat() {
+            const chatFeed = document.getElementById('chatFeed');
+            chatFeed.innerHTML = '';
+
+            state.messages.forEach(msg => {
+                const isMe = msg.sender === state.activeUser;
+                const avatar = msg.sender === 'dudu' ? '🐻' : '🐼';
+                const name = msg.sender === 'dudu' ? 'Dudu' : 'Bubu';
+
+                const wrapper = document.createElement('div');
+                wrapper.className = `flex items-end space-x-2 ${isMe ? 'justify-end' : 'justify-start'}`;
+
+                const content = `
+                    ${!isMe ? `<div class="w-8 h-8 rounded-full bg-pink-100 flex items-center justify-center text-sm shadow-sm flex-shrink-0">${avatar}</div>` : ''}
+                    <div class="max-w-[75%] space-y-1">
+                        <div class="flex items-center space-x-2 ${isMe ? 'justify-end' : 'justify-start'}">
+                            <span class="text-[10px] font-bold text-slate-400">${name}</span>
+                            <span class="text-[9px] text-slate-300">${msg.time}</span>
+                        </div>
+                        <div class="px-4 py-2.5 rounded-2xl text-sm font-medium shadow-sm ${
+                            isMe 
+                                ? (msg.sender === 'dudu' ? 'bg-amber-700 text-white rounded-br-none' : 'bg-pink-500 text-white rounded-br-none')
+                                : 'bg-pink-50 text-slate-700 rounded-bl-none border border-pink-100'
+                        }">
+                            ${msg.text}
+                        </div>
+                    </div>
+                    ${isMe ? `<div class="w-8 h-8 rounded-full bg-pink-100 flex items-center justify-center text-sm shadow-sm flex-shrink-0">${avatar}</div>` : ''}
+                `;
+
+                wrapper.innerHTML = content;
+                chatFeed.appendChild(wrapper);
+            });
+
+            chatFeed.scrollTop = chatFeed.scrollHeight;
+        }
+
+        function handleSendChat(e) {
+            e.preventDefault();
+            const input = document.getElementById('chatInput');
+            const text = input.value.trim();
+            if (!text) return;
+
+            const now = new Date();
+            const timeStr = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+            state.messages.push({
+                id: Date.now(),
+                sender: state.activeUser,
+                text: text,
+                time: timeStr
+            });
+
+            saveState();
+            renderChat();
+            input.value = '';
+        }
+
+        function addSticker(sticker) {
+            const input = document.getElementById('chatInput');
+            input.value += sticker;
+            input.focus();
+        }
+
+        function clearChatHistory() {
+            if (confirm('Clear all whisper nook messages?')) {
+                state.messages = [];
+                saveState();
+                renderChat();
+            }
+        }
+
+        // COMPONENT 2: LOVE LETTERS LOGIC
+        function renderLetters() {
+            const grid = document.getElementById('lettersGrid');
+            grid.innerHTML = '';
+
+            state.letters.forEach(letter => {
+                const authorAvatar = letter.author === 'dudu' ? '🐻 Dudu' : '🐼 Bubu';
+                const card = document.createElement('div');
+                card.className = `p-5 rounded-3xl border-2 transition transform hover:-translate-y-1 shadow-md cursor-pointer flex flex-col justify-between paper-${letter.style}`;
+                
+                card.onclick = () => openViewLetterModal(letter.id);
+
+                card.innerHTML = `
+                    <div>
+                        <div class="flex items-center justify-between mb-3">
+                            <span class="text-2xl">${letter.stamp}</span>
+                            <span class="text-[11px] font-bold px-2.5 py-1 rounded-full bg-black/5 opacity-80">${authorAvatar}</span>
+                        </div>
+                        <h3 class="heading-font text-lg font-bold mb-1">${letter.title}</h3>
+                        <p class="text-xs line-clamp-3 opacity-80 font-medium">${letter.body}</p>
+                    </div>
+                    <div class="mt-4 pt-3 border-t border-current/10 flex items-center justify-between text-[11px] opacity-70">
+                        <span>${letter.date}</span>
+                        <span class="font-bold flex items-center space-x-1">
+                            <span>Read Envelope</span>
+                            <i data-lucide="mail-open" class="w-3.5 h-3.5"></i>
+                        </span>
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+            lucide.createIcons();
+        }
+
+        function openLetterModal() {
+            document.getElementById('modalAuthorTag').textContent = state.activeUser === 'dudu' ? '🐻 Dudu' : '🐼 Bubu';
+            document.getElementById('letterModal').classList.remove('hidden');
+        }
+
+        function closeLetterModal() {
+            document.getElementById('letterModal').classList.add('hidden');
+            document.getElementById('letterForm').reset();
+        }
+
+        function handleSaveLetter(e) {
+            e.preventDefault();
+            const title = document.getElementById('letterTitle').value;
+            const style = document.getElementById('letterStyle').value;
+            const stamp = document.getElementById('letterStamp').value;
+            const body = document.getElementById('letterBody').value;
+
+            const newLetter = {
+                id: 'letter-' + Date.now(),
+                title,
+                author: state.activeUser,
+                recipient: state.activeUser === 'dudu' ? 'bubu' : 'dudu',
+                style,
+                stamp,
+                date: 'Just now',
+                isFavorite: false,
+                body
+            };
+
+            state.letters.unshift(newLetter);
+            saveState();
+            renderLetters();
+            closeLetterModal();
+
+            confetti({
+                particleCount: 50,
+                spread: 60,
+                origin: { y: 0.7 }
+            });
+        }
+
+        function openViewLetterModal(id) {
+            const letter = state.letters.find(l => l.id === id);
+            if (!letter) return;
+            currentViewingLetterId = id;
+
+            const modal = document.getElementById('viewLetterModal');
+            const card = document.getElementById('envelopeCard');
+
+            // Apply style class
+            card.className = `relative max-w-lg w-full rounded-3xl p-6 sm:p-8 shadow-2xl transition-all duration-300 transform border-2 paper-${letter.style}`;
+            
+            document.getElementById('viewLetterStamp').textContent = letter.stamp;
+            document.getElementById('viewLetterFrom').textContent = `From ${letter.author === 'dudu' ? '🐻 Dudu' : '🐼 Bubu'}`;
+            document.getElementById('viewLetterDate').textContent = letter.date;
+            document.getElementById('viewLetterTitle').textContent = letter.title;
+            document.getElementById('viewLetterBody').textContent = letter.body;
+
+            const favBtn = document.getElementById('viewLetterFavBtn');
+            favBtn.className = letter.isFavorite ? 'text-rose-500 scale-110' : 'text-slate-400';
+
+            modal.classList.remove('hidden');
+        }
+
+        function closeViewLetterModal() {
+            document.getElementById('viewLetterModal').classList.add('hidden');
+        }
+
+        function toggleFavoriteCurrentLetter() {
+            if (!currentViewingLetterId) return;
+            const letter = state.letters.find(l => l.id === currentViewingLetterId);
+            if (letter) {
+                letter.isFavorite = !letter.isFavorite;
+                saveState();
+                renderLetters();
+                openViewLetterModal(currentViewingLetterId);
+            }
+        }
+
+        // COMPONENT 3: UNIVERSE, COUNTERS & MOOD JAR
+        function updateDaysCounter() {
+            const start = new Date(state.startDate);
+            const now = new Date();
+            const diffTime = Math.abs(now - start);
+            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+            document.getElementById('daysCounter').textContent = `${diffDays} Days Together`;
+        }
+
+        function updateLoveCounters() {
+            document.getElementById('hugCount').textContent = state.hugCount;
+            document.getElementById('kissCount').textContent = state.kissCount;
+        }
+
+        function sendLoveAction(e, type) {
+            if (type === 'hug') {
+                state.hugCount++;
+            } else {
+                state.kissCount++;
+            }
+            saveState();
+            updateLoveCounters();
+
+            // Spawn Heart Floating Particle Effect
+            createHeartParticle(e.clientX, e.clientY, type === 'hug' ? '🤗' : '💋');
+        }
+
+        function createHeartParticle(x, y, emoji) {
+            const particle = document.createElement('div');
+            particle.className = 'heart-particle text-3xl';
+            particle.style.left = `${x - 15}px`;
+            particle.style.top = `${y - 15}px`;
+            particle.textContent = emoji;
+
+            document.body.appendChild(particle);
+
+            setTimeout(() => {
+                particle.remove();
+            }, 1200);
+        }
+
+        function handleMoodSubmit(e) {
+            e.preventDefault();
+            const emoji = document.querySelector('input[name="moodEmoji"]:checked').value;
+            const noteText = document.getElementById('moodNote').value.trim();
+
+            if (!noteText) return;
+
+            state.jarNotes.unshift({
+                id: Date.now(),
+                user: state.activeUser,
+                mood: emoji,
+                note: noteText,
+                date: 'Just now'
+            });
+
+            saveState();
+            renderJarNotes();
+            document.getElementById('moodNote').value = '';
+        }
+
+        function renderJarNotes() {
+            const container = document.getElementById('jarNotesFeed');
+            container.innerHTML = '';
+
+            state.jarNotes.forEach(item => {
+                const avatar = item.user === 'dudu' ? '🐻' : '🐼';
+                const el = document.createElement('div');
+                el.className = 'p-3 rounded-2xl bg-pink-50/60 border border-pink-100 flex items-center space-x-3 text-xs font-medium';
+                el.innerHTML = `
+                    <span class="text-2xl">${item.mood}</span>
+                    <div class="flex-grow">
+                        <div class="flex items-center justify-between">
+                            <span class="font-bold text-slate-700">${avatar} ${item.user === 'dudu' ? 'Dudu' : 'Bubu'}</span>
+                            <span class="text-[10px] text-slate-400">${item.date}</span>
+                        </div>
+                        <p class="text-slate-600 mt-0.5">${item.note}</p>
+                    </div>
+                `;
+                container.appendChild(el);
+            });
+        }
+    </script>
+</body>
+</html>
